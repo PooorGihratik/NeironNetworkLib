@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NeironNetwork2
+namespace NeironNetworkLib
 {
     public class Tangh : IFuncOfActivation
     {

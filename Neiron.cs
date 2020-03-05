@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NeironNetwork2
+namespace NeironNetworkLib
 {
     class Neiron
     {
