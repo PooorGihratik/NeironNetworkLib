@@ -19,8 +19,8 @@ namespace NeironNetworkLib
             LearningRate = learningRate;
             Momentum = momentum;
             Outputs = new List<double>();
-            layers.Add(new Layer(countOfNeironsOnLayers[0],func));
-            for (int i = 1; i<countOfNeironsOnLayers.Length;i++)
+            layers.Add(new Layer(countOfNeironsOnLayers[0],countOfNeironsOnLayers[1],func));
+            for (int i = 2; i<countOfNeironsOnLayers.Length;i++)
             {
                 layers.Add(new Layer(layers[i-1],countOfNeironsOnLayers[i],func));
             }
