@@ -7,7 +7,7 @@ namespace NeironNetworkLib
     class Layer
     {
         internal List<Neiron> neirons = new List<Neiron>();
-        public Layer(int countOfInputs,int countOfNeirons, IFuncOfActivation func) //Для первого скрытого слоя
+        public Layer(uint countOfInputs,uint countOfNeirons, IFuncOfActivation func) //Для первого скрытого слоя
         {
             for (int i = 0; i < countOfNeirons; i++)
             {
@@ -22,7 +22,7 @@ namespace NeironNetworkLib
                 }
             }
         }
-        public Layer(Layer lastLayer,int countOfNeirons, IFuncOfActivation func) //Для последующих
+        public Layer(Layer lastLayer,uint countOfNeirons, IFuncOfActivation func) //Для последующих
         {
             for (int i=0;i<countOfNeirons;i++)
             {

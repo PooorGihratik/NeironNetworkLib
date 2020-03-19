@@ -20,7 +20,7 @@ namespace NeironNetworkLib
         /// 2.Логистическая функция: Sigmoid
         /// 3.Гиперболический тангенс: Tangh
         /// </summary>
-        public Network(IFuncOfActivation func,double learningRate, double momentum, params int[] countOfNeironsOnLayers)
+        public Network(IFuncOfActivation func,double learningRate, double momentum, params uint[] countOfNeironsOnLayers)
         {
             LearningRate = learningRate;
             Momentum = momentum;
