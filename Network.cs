@@ -12,19 +12,25 @@ namespace NeironNetworkLib
         public double Mistake { get; private set; }
         public double LearningRate { get; }
         public double Momentum { get; }
-        
+
         //Сеть создается начиная со скрытых слоев
+        /// <summary>
+        /// Cписок функций активации(классы с функциями FuncOfActivation() и Deriative())
+        /// 1.Линейная функция с утечкой: LeakyLinearUnit
+        /// 2.Логистическая функция: Sigmoid
+        /// 3.Гиперболический тангенс: Tangh
+        /// </summary>
         public Network(IFuncOfActivation func,double learningRate, double momentum, params int[] countOfNeironsOnLayers)
         {
             LearningRate = learningRate;
             Momentum = momentum;
             Outputs = new List<double>();
-            layers.Add(new Layer(countOfNeironsOnLayers[0],countOfNeironsOnLayers[1],func));
+            layers.Add(new Layer(countOfNeironsOnLayers[0],countOfNeironsOnLayers[1],func)); //Нулевой слой - количество входных данных
             for (int i = 2; i<countOfNeironsOnLayers.Length;i++)
             {
-                layers.Add(new Layer(layers[i-1],countOfNeironsOnLayers[i],func));
+                layers.Add(new Layer(layers[i-2],countOfNeironsOnLayers[i],func));
             }
-            for (int i = 0; i < layers[layers.Count - 1].neirons.Count; i++)
+            for (int i = 0; i < layers[layers.Count - 1].neirons.Count; i++) //Добавление выходных данны последнего слоя
             {
                 Outputs.Add(0);
             }
@@ -65,9 +71,9 @@ namespace NeironNetworkLib
             //Нахождение дельт у последующих
             for (int i=0;i<layers.Count-1;i++)
             {
-                for (int k = 0; k < layers[layers.Count-1].neirons.Count; k++)
+                for (int k = 0; k < layers[layers.Count-2-i].neirons.Count; k++)
                 {
-                    layers[layers.Count-2-i].neirons[k].FindDelta(layers[(layers.Count)-1-i],k);
+                    layers[layers.Count-2-i].neirons[k].FindDelta(layers[(layers.Count)-i-1],k);
                 }
             }
             ///Корректировка весов нейронов

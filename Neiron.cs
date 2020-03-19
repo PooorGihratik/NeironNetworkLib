@@ -6,6 +6,12 @@ namespace NeironNetworkLib
     {
         internal List<double> LastChangeWeight = new List<double>();
         internal List<double> WeightIn = new List<double>();
+        /// <summary>
+        /// Cписок функций активации(классы с функциями FuncOfActivation() и Deriative())
+        /// 1.Линейная функция с утечкой: LeakyLinearUnit
+        /// 2.Логистическая функция: Sigmoid
+        /// 3.Гиперболический тангенс: Tangh
+        /// </summary>
         private readonly IFuncOfActivation func;
         internal double Delta { get; private set; }
         internal double Output { get; private set; }
