@@ -9,7 +9,7 @@ namespace NeironNetworkLib
         private readonly List<Layer> layers = new List<Layer>();
         public List<double> Outputs { get; private set; }
         public int CountOfLayers { get; }
-        public double Mistake { get; private set; }
+        public double Error { get; private set; } //Ошибка за последнюю эпоху
         public double LearningRate { get; }
         public double Momentum { get; }
 
@@ -20,7 +20,7 @@ namespace NeironNetworkLib
         /// 2.Логистическая функция: Sigmoid
         /// 3.Гиперболический тангенс: Tangh
         /// </summary>
-        public Network(IFuncOfActivation func,double learningRate, double momentum, params uint[] countOfNeironsOnLayers)
+        public Network(IFuncOfActivation func,double learningRate, double momentum, params int[] countOfNeironsOnLayers)
         {
             LearningRate = learningRate;
             Momentum = momentum;
@@ -37,7 +37,7 @@ namespace NeironNetworkLib
             CountOfLayers = countOfNeironsOnLayers.Length;
         }
 
-        public void GetOutputs(List<double> inputs)
+        public void GetOutputs(double[] inputs)
         {
             layers[0].GetOutputs(inputs); //Для первого слоя
             for (int i = 1; i < layers.Count;i++)
@@ -49,8 +49,9 @@ namespace NeironNetworkLib
                 Outputs[i] = layers[layers.Count - 1].neirons[i].Output; //Сохранение выводов нейросети
             }
         }
-        public void Train(List<double> inputs, List<double> waitingOutcomes)
+        public double Train(double[] inputs, double[] waitingOutcomes)
         {
+            double error;
             //Получаем результаты сети
             GetOutputs(inputs);
             //Находим ошибку
@@ -60,7 +61,7 @@ namespace NeironNetworkLib
                 sum += (waitingOutcomes[i] - Outputs[i]) * (waitingOutcomes[i] - Outputs[i]);
                 count++;
             }
-            Mistake = sum / count;
+            error = sum / count;
             ///Сам метод обратного распространения
             //Нахождение дельт выходного слоя
             for (int i=0;i<layers[layers.Count-1].neirons.Count;i++)
@@ -90,6 +91,35 @@ namespace NeironNetworkLib
                 {
                     layers[i].neirons[k].ChangeWeight(LearningRate, Momentum, layers[i-1]);
                 }
+            }
+            return error;
+        }
+        //Тренировка по эпохам
+        public void TrainEpoch(int countOfEpochs, double[,][] trainSets)
+        {
+            if (trainSets.GetUpperBound(0) != 1) throw new Exception("Массив тренировочных сетов должен состоять только из двух строк");
+            for (int i=0;i<countOfEpochs; i++)
+            {
+                double error=0;
+                for (int k=0;k<trainSets.GetUpperBound(1)+1;k++) //Последовательно прогоняем все тренировочные сеты
+                {
+                    error += (Train(trainSets[1,k], trainSets[2, k]))* (Train(trainSets[1, k], trainSets[2, k]));
+                }
+                Error = error / trainSets.GetUpperBound(1) + 1;
+            }
+        }
+        public void TrainEpoch(int countOfEpochs, double minError, double[,][] trainSets)
+        {
+            if (trainSets.GetUpperBound(0) != 1) throw new Exception("Массив тренировочных сетов должен состоять только из двух строк");
+            for (int i = 0; i < countOfEpochs; i++)
+            {
+                double error = 0;
+                for (int k = 0; k < trainSets.GetUpperBound(1) + 1; k++) //Последовательно прогоняем все тренировочные сеты
+                {
+                    error += (Train(trainSets[1, k], trainSets[2, k])) * (Train(trainSets[1, k], trainSets[2, k]));
+                }
+                Error = error / trainSets.GetUpperBound(1) + 1;
+                if (minError >= Error) break;
             }
         }
     }

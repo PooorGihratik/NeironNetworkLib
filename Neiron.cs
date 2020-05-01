@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NeironNetworkLib
 {
     class Neiron
     {
-        internal List<double> LastChangeWeight = new List<double>();
-        internal List<double> WeightIn = new List<double>();
+        private double[] LastChangeWeight;
+        private double[] WeightIn;
         /// <summary>
         /// Cписок функций активации(классы с функциями FuncOfActivation() и Deriative())
         /// 1.Линейная функция с утечкой: LeakyLinearUnit
@@ -16,15 +18,24 @@ namespace NeironNetworkLib
         internal double Delta { get; private set; }
         internal double Output { get; private set; }
 
-        internal Neiron(IFuncOfActivation func)
+        internal Neiron(IFuncOfActivation func, int countOfNeironsOnPrevious)
         {
+            if (countOfNeironsOnPrevious <= 0) throw new Exception("Нельзя создать нейрон без входящих связей!");
             this.func = func;
             Delta = 0;
+            Random rand = new Random();
+            LastChangeWeight = new double[countOfNeironsOnPrevious];
+            WeightIn = new double[countOfNeironsOnPrevious];
+            for (int i=0;i< countOfNeironsOnPrevious;i++)
+            {
+                LastChangeWeight[i] = 0;
+                WeightIn[i] = rand.NextDouble();
+            }
         }
-        internal void FindOutput(List<double> inputs) //Для первого скрытого слоя
+        internal void FindOutput(double[] inputs) //Для первого скрытого слоя
         {
             double Sum = 0;
-            for (int i = 0; i < inputs.Count; i++)
+            for (int i = 0; i < inputs.Length; i++)
             {
                 Sum += inputs[i] * WeightIn[i];
             }
@@ -53,9 +64,9 @@ namespace NeironNetworkLib
             }
             Delta *= func.Derivative(Output);
         }
-        internal void ChangeWeight(double learningRate, double momentum, List<double> inputs) //Для первого скрытого слоя
+        internal void ChangeWeight(double learningRate, double momentum, double[] inputs) //Для первого скрытого слоя
         {
-            for (int i=0;i<inputs.Count;i++)
+            for (int i=0;i<inputs.Length;i++)
             {
                 double grad = inputs[i] * Delta;
                 LastChangeWeight[i] = grad * learningRate + LastChangeWeight[i] * momentum;
